@@ -95,10 +95,13 @@ if __name__ == '__main__':
     path_list = list_xml_path('data/')
     grant_info_all = []
     grant_investigators_all = []
-    for p in path_list[0:50000]:
-        [grant_info, grant_investigators] = parse_nsf_xml(p)
-        grant_info_all.append(grant_info)
-        grant_investigators_all.extend(grant_investigators)
+    for p in path_list:
+        try:
+            [grant_info, grant_investigators] = parse_nsf_xml(p)
+            grant_info_all.append(grant_info)
+            grant_investigators_all.extend(grant_investigators)
+        except:
+            print('Error file: %s' % p)
     grant_investigators_all = list(chain(*grant_investigators_all))
     print("Finish parsing ...")
 
