@@ -9,4 +9,5 @@ We will put parsed tables on Amazon S3 soon.
 ## Members
 
 - [Titipat Achakulvisut](http://titipata.github.io/)
+- [Tulakan Ruangrong](http://bluenex.github.io/)
 - [Daniel Acuna](http://www.scienceofscience.org/)
