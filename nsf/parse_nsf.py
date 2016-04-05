@@ -4,6 +4,7 @@ import glob
 from lxml import etree
 from lxml.etree import tostring
 from itertools import chain
+import pandas as pd
 
 
 def stringify_children(node):
@@ -89,12 +90,20 @@ def parse_nsf_xml(path):
 
 
 if __name__ == '__main__':
-    # for loop through all
+    # for loop through subset of xml files in downloaded data folder
+    print("Start parsing ...")
     path_list = list_xml_path('data/')
     grant_info_all = []
     grant_investigators_all = []
-    for p in path_list:
+    for p in path_list[0:50000]:
         [grant_info, grant_investigators] = parse_nsf_xml(p)
         grant_info_all.append(grant_info)
-        grant_investigators_all.extend(grant_investigators_all)
-    print("Finish parsing")
+        grant_investigators_all.extend(grant_investigators)
+    grant_investigators_all = list(chain(*grant_investigators_all))
+    print("Finish parsing ...")
+
+    grant_info_df = pd.DataFrame(grant_info_all).fillna('')
+    grant_investigators_df = pd.DataFrame(grant_investigators_all).fillna('')
+    grant_info_df.to_csv('grant_info.csv', index=False)
+    grant_investigators_df.to_csv('grant_investigators.csv', index=False)
+    print("Finish saving to csv files")
