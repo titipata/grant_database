@@ -1,4 +1,4 @@
-python download_award_links.py # load to nsf
+python dl_nsf.py # load to nsf
 
 # check whether there is already data folder or not
 if [ ! -d $PWD/data ]; then
