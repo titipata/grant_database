@@ -5,6 +5,7 @@ from lxml import etree
 from lxml.etree import tostring
 from itertools import chain
 
+
 def stringify_children(node):
     """
     Filters and removes possible Nones in texts and tails
@@ -20,7 +21,7 @@ def list_xml_path(path):
     """
     list all xml file from particular folder (non-recursive)
     """
-    path_list = glob.glob(os.path.join(path, '*.xml'))
+    path_list = glob.glob(os.path.join(path, '*', '*.xml'), recursive=True)
     return path_list
 
 
@@ -40,13 +41,13 @@ def parse_nsf_xml(path):
             raise Exception("It was not able to read a path, a file-like object, or a string as an XML")
 
     number = path_list[1].split('/')[-1] # file name
-    title = tree.xpath('//Award/AwardTitle/text()')[0]
-    effective_date = tree.xpath('//Award/AwardEffectiveDate/text()')[0]
-    expire_date = tree.xpath('//Award/AwardExpirationDate/text()')[0]
-    amount = tree.xpath('//Award/AwardAmount/text()')[0]
-    program_officer = tree.xpath('//Award/ProgramOfficer/SignBlockName/text()')[0]
-    abstract = tree.xpath('//Award/AbstractNarration/text()')[0]
-    award_id = tree.xpath('//Award/AwardID/text()')[0]
+    title = ''.join(tree.xpath('//Award/AwardTitle/text()'))
+    effective_date = ''.join(tree.xpath('//Award/AwardEffectiveDate/text()'))
+    expire_date = ''.join(tree.xpath('//Award/AwardExpirationDate/text()'))
+    amount = ''.join(tree.xpath('//Award/AwardAmount/text()')[0])
+    program_officer = ''.join(tree.xpath('//Award/ProgramOfficer/SignBlockName/text()'))
+    abstract = ''.join(tree.xpath('//Award/AbstractNarration/text()'))
+    award_id = ''.join(tree.xpath('//Award/AwardID/text()'))
 
     org = tree.xpath('//Award/Organization')
     for o in org:
@@ -85,3 +86,15 @@ def parse_nsf_xml(path):
         grant_investigators.append(investigator)
 
     return [grant_info, grant_investigators]
+
+
+if __name__ == '__main__':
+    # for loop through all
+    path_list = list_xml_path('data/')
+    grant_info_all = []
+    grant_investigators_all = []
+    for p in path_list:
+        [grant_info, grant_investigators] = parse_nsf_xml(p)
+        grant_info_all.append(grant_info)
+        grant_investigators_all.extend(grant_investigators_all)
+    print("Finish parsing")
