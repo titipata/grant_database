@@ -99,7 +99,7 @@ if __name__ == '__main__':
         try:
             [grant_info, grant_investigators] = parse_nsf_xml(p)
             grant_info_all.append(grant_info)
-            grant_investigators_all.extend(grant_investigators)
+            grant_investigators_all.append(grant_investigators)
         except:
             print('Error file: %s' % p)
     grant_investigators_all = list(chain(*grant_investigators_all))
