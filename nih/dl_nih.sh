@@ -59,6 +59,7 @@ downloadallzip() {
 }
 
 update() {
+  cd links/
   if [[ -f tempnew.txt ]]; then rm tempnew.txt; fi
   if [[ -f sold.txt ]]; then rm sold.txt; fi
   if [[ -f snew.txt ]]; then rm snew.txt; fi
@@ -86,13 +87,12 @@ update() {
   fi
 
   rm tempnew.txt sold.txt snew.txt
+  cd ..
 }
 
 updateall() {
-  cd links/
   update project; update abstract; update publication
   update patent; update clinical; update link
-  cd ..
 }
 
 # unzip all files
@@ -100,11 +100,15 @@ unzipall() {
   for folder in $PWD/data/*/
   do
     echo $folder
-    for file in $folder*
+    for file in $folder*.zip
     do
-    unzip -q $file -d ${file%.*} # remove q for verbose output
-    # echo unzipped ${z##*/}
-    echo $file
+      if [[ ! -d ${file%.*} ]]
+      then
+        unzip -q $file -d ${file%.*} # remove q for verbose output
+        echo unzipped ${file##*/}
+      else
+        echo already unzip ${file##*/}..
+      fi
     done
   done
 }
