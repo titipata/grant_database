@@ -14,7 +14,8 @@ First, you have to install `awscli` using `pip` (see this [instruction](http://d
 We now provide parsed data of NSF. You can use `awscli` to download as follows:
 
 ```
-aws s3 cp s3://grant-dataset/nsf . --recursive
+aws s3 cp s3://grant-dataset/nih . --recursive --region us-west-2 # for nih grant dataset
+aws s3 cp s3://grant-dataset/nsf . --recursive --region us-west-2 # for nsf grant dataset
 ```
 
 
@@ -26,6 +27,7 @@ You can install the dependencies using `pip`.
 ```
 pip -r install requirements.txt
 ```
+
 
 ## Members
 

@@ -16,3 +16,6 @@ chmod +x dl_nih.sh
 ```
 
 and run again
+
+To create investigators dataset which contain PIs name, ID, Application ID, run
+`python parse_pi.py`, this will create `nih_grant_investigators.csv` file
