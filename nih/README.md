@@ -3,19 +3,35 @@
 All file from NIH grant can be downloaded [here](http://exporter.nih.gov/ExPORTER_Catalog.aspx).
 We create bash to load and unzip all files from NIH website.
 
-Run
+First we will download all the available links and save into `txt` files.
 
 ```
-./dl_nih.sh
+./dl_nih.sh getalllink
 ```
 
-This will download all grant to `data` folder. If you are not able to run then do `chmod` first
+Then we will download all the zip files from those links.
 
 ```
-chmod +x dl_nih.sh
+./dl_nih.sh downloadallzip
 ```
 
-and run again
+And we can now unzip all those downloaded zip files.
+
+```
+./dl_nih.sh unzipall
+```
+
+If you need to update the data you can run:
+
+```
+./dl_nih.sh update <desired folder>
+```
+
+or
+
+```
+./dl_nih.sh updateall
+```
 
 To create investigators dataset which contain PIs name, ID, Application ID, run
 `python parse_pi.py`, this will create `nih_grant_investigators.csv` file

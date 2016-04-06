@@ -107,6 +107,6 @@ if __name__ == '__main__':
 
     grant_info_df = pd.DataFrame(grant_info_all).fillna('')
     grant_investigators_df = pd.DataFrame(grant_investigators_all).fillna('')
-    grant_info_df.to_csv('grant_info.csv', index=False)
-    grant_investigators_df.to_csv('grant_investigators.csv', index=False)
+    grant_info_df.to_csv('nsf_grant_info.csv', index=False)
+    grant_investigators_df.to_csv('nsf_grant_investigators.csv', index=False)
     print("Finish saving to csv files")
