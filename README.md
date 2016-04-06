@@ -13,10 +13,12 @@ python script to download and parse data into `csv` file.
 First, you have to install `awscli` using `pip` (see this [instruction](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)).
 We now provide parsed data of NSF. You can use `awscli` to download as follows:
 
-```
+```bash
 aws s3 cp s3://grant-dataset/nih . --recursive --region us-west-2 # for nih grant dataset
 aws s3 cp s3://grant-dataset/nsf . --recursive --region us-west-2 # for nsf grant dataset
 ```
+
+This contain around 2M grants from NIH and 500k grants from NSF.
 
 
 ## Install dependencies
