@@ -34,4 +34,5 @@ or
 ```
 
 To create investigators dataset which contain PIs name, ID, Application ID, run
-`python parse_pi.py`, this will create `nih_grant_investigators.csv` file
+`python parse_pi.py`, this will create `nih_grant_investigators.csv` file.
+You can create `nih_grant_info.csv` by running `python parse_info.py`
