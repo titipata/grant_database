@@ -24,13 +24,7 @@ And we can now unzip all those downloaded zip files.
 If you need to update the data you can run:
 
 ```
-./dl_nih.sh update <desired folder>
-```
-
-or
-
-```
-./dl_nih.sh updateall
+./dl_nih.sh updateall && ./dl_nih.sh unzipall
 ```
 
 To create investigators dataset which contain PIs name, ID, Application ID, run
