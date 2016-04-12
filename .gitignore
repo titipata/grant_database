@@ -174,3 +174,7 @@ Temporary Items
 # Custom folders
 links/
 data/
+
+# temporary not allow pushing IPython notebook
+*.ipynb
+*.csv

@@ -5,7 +5,9 @@ from their website. The link for NSF awards data is [here](https://www.nsf.gov/a
 for NIH award is [here](http://exporter.nih.gov/ExPORTER_Catalog.aspx).
 
 Check out [`nih`](/nih) and [`nsf`](/nsf) folder, we provide bash and
-python script to download and parse data into `csv` file.
+python script to download and parse data into `csv` file. Also checkout
+[`dedupe`](/dedupe) folder soon where we put script to deduplicate and link
+NIH/NSF grant together.
 
 
 ## Download cleaned data from Amazon S3
@@ -18,7 +20,7 @@ aws s3 cp s3://grant-dataset/nih . --recursive --region us-west-2 # for nih gran
 aws s3 cp s3://grant-dataset/nsf . --recursive --region us-west-2 # for nsf grant dataset
 ```
 
-This contain around 2M grants from NIH and 500k grants from NSF.
+This contains around 2M grants (1.7 Gb) from NIH and 500k grants from NSF (700 Mb).
 
 
 ## Install dependencies
