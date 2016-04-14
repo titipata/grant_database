@@ -21,4 +21,4 @@ link to zip file. Then it downloads and unzips all those zip files into `data` d
 
 To parse all downloaded xml file in `data` folder, run `python parse_nsf.py`
 (right now, we run sample of 50k xml, you can modify in the file to parse all).
-This will generate `grant_info.csv` and `grant_investigators.csv` file
+This will generate `nsf_grant_info.csv` and `nsf_grant_investigators.csv` file

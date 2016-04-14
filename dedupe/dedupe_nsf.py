@@ -3,7 +3,7 @@ import dedupe
 import numpy as np
 import pandas as pd
 from unidecode import unidecode
-
+from utils import *
 
 # set up file path and parameters
 class Parameters():
@@ -13,48 +13,6 @@ class Parameters():
     output_file = ''
     settings_file = 'nsf_settings'
     training_file = 'nsf_training.json'
-
-
-def format_text(text):
-    """Fill empty string with none"""
-    if text.strip() == '':
-        text_output = None
-    else:
-        text_output = unidecode(text)
-    return text_output
-
-
-def read_setting_file(filename='settings'):
-    """Read dedupe settings file"""
-    settings_file = filename
-    print('reading from', settings_file)
-    with open(settings_file, 'rb') as sf:
-        deduper = dedupe.StaticDedupe(sf)
-    return deduper
-
-
-def read_training_file(deduper, filename='training.json'):
-    """Read dedupe training file"""
-    training_file = filename
-    print('reading labeled examples from ', training_file)
-    with open(training_file, 'rb') as tf:
-        deduper.readTraining(tf)
-    return deduper
-
-
-def write_setting_file(deduper, filename='settings'):
-    """Write dedupe setting file"""
-    settings_file = filename
-    with open(settings_file, 'wb') as sf:
-        deduper.writeSettings(sf)
-    print("Setting file saved")
-
-
-def write_training_file(deduper, filename='training.json'):
-    """Give a deduper, write a training file"""
-    with open(filename, 'w') as tf:
-        deduper.writeTraining(tf)
-    print("Training file saved")
 
 
 if __name__ == '__main__':
@@ -68,8 +26,8 @@ if __name__ == '__main__':
                         for (i, (n, e)) in enumerate(name_email))
 
     # use "full name" and "email" for deduplication
-    fields = [{'field':'name', 'type': 'String', 'has missing' : True},
-              {'field' : 'email', 'type': 'String', 'has missing' : True}]
+    fields = [{'field' : 'name', 'type' : 'String', 'has missing' : True},
+              {'field' : 'email', 'type' : 'String', 'has missing' : True}]
     deduper = dedupe.Dedupe(fields, num_cores=params.num_cores)
     deduper.sample(dedupe_dict, params.n_sample)
 
