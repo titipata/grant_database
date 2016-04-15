@@ -62,3 +62,36 @@ def write_training_file(deduper, filename='training.json'):
     with open(filename, 'w') as tf:
         deduper.writeTraining(tf)
     print("Training file saved")
+
+
+def format_text(text):
+    """Fill empty string with none"""
+    try:
+        return preprocess(text)
+    except:
+        pass
+    return ''
+
+
+def dataframe_to_dict(df):
+    """
+    Transforms a pandas' dataframe to a dict used by dedupe
+    """
+    return dict((i, a) for (i, a) in enumerate(df.to_dict('records')))
+
+
+def add_dedupe_col(df, df_dict, deduper, threshold):
+    """
+    add a deduplication column to the dataframe `df` using the `deduper`
+    """
+    df_new = df.copy()
+    df_new['dedupe_id'] = None
+    clustered = deduper.match(df_dict, threshold)
+    cluster_assignment_idx = np.array([[row_id, c_id]
+                                       for c_id in range(len(clustered))
+                                       for row_id in clustered[c_id][0]])
+
+    df_new.dedupe_id.iloc[cluster_assignment_idx[:, 0]] = cluster_assignment_idx[:, 1]
+    new_idx = range(df_new.dedupe_id.max() + 1, df_new.dedupe_id.max() + 1 + df_new.dedupe_id.isnull().sum())
+    df_new.dedupe_id[df_new.dedupe_id.isnull()] = new_idx
+    return df_new
