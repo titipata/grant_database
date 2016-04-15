@@ -16,8 +16,7 @@ First, you have to install `awscli` using `pip` (see this [instruction](http://d
 We now provide parsed data of NSF. You can use `awscli` to download as follows:
 
 ```bash
-aws s3 cp s3://grant-dataset/nih . --recursive --region us-west-2 # for nih grant dataset
-aws s3 cp s3://grant-dataset/nsf . --recursive --region us-west-2 # for nsf grant dataset
+aws s3 cp s3://grant-dataset/ data/ --recursive --region us-west-2 # download nih, nsf, and grid data
 ```
 
 This contains around 2M grants (1.7 Gb) from NIH and 500k grants from NSF (700 Mb).
