@@ -30,7 +30,9 @@ def unzip_file():
 def preprocess_files():
     def merge_acronyms_aliases(df):
         new_df = df[['grid_id', 'Name', 'City', 'State', 'Country']].iloc[[0]]
-        new_name = new_df.Name.iloc[0] + ' ' + ' '.join(df.acronym) + ' ' + ' '.join(df.alias)
+        new_name = new_df.Name.iloc[0] + ' ' + \
+                   ' '.join(df.acronym.unique()) + ' ' + \
+                   ' '.join(df.alias.unique())
         new_df['NameMerged'] = new_name.strip()
         new_df['Acrynyms'] = (' '.join(df.acronym)).strip()
         new_df['Aliases'] = (' '.join(df.alias)).strip()
