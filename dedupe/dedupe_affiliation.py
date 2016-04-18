@@ -34,7 +34,7 @@ if __name__ == '__main__':
     parser.add_argument('-n', help='Number of samples', default=15000, type=int)
     parser.add_argument('-s', '--settings', help='Settings file', default='affiliation_settings')
     parser.add_argument('-t', '--training', help='Training file', default='affiliation_training.json')
-    parser.add_argument('-l', '--label', help='Console label', action='store_true', default=True)
+    parser.add_argument('-l', '--skiplabel', help='Skip console labeling', action='store_true')
     parser.add_argument('--results', default='institutions_disambiguated.csv')
     parser.add_argument('-v', '--verbose', action='store_true')
 
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     print('starting active labeling...')
 
-    if args.label:
+    if not args.skiplabel:
         dedupe.consoleLabel(deduper)
 
     deduper.train(ppc=None, recall=0.95)

@@ -19,4 +19,7 @@ are files for doing record linkage between NIH and NSF database.
 own unique applicants id.
 
 - **affiliation dedupe:** run `python dedupe_affiliation.py` in order to train dedupe model.
-All training will be located in `affiliation_training.json`.
+By default, the settings will be saved in `affiliation_settings` and the training data will be saved in 
+`affiliation_training.json`. Many parameters of the deduplication process can be tweaked by looking
+at the parameters with `python dedupe_affiliation.py -h`. For example, to skip the console labeling step, run
+`python dedupe_affiliation.py --skiplabel`.
