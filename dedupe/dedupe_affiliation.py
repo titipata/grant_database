@@ -2,6 +2,7 @@ import pandas as pd
 import argparse
 from utils import *
 
+
 def merge_nsf_nih_df():
     """
     Read data from NIH and NSF grant and return
@@ -12,19 +13,23 @@ def merge_nsf_nih_df():
 
     nih_affil_dedupe = nih_grant_info[['org_name', 'org_city', 'org_state']]
     nih_affil_dedupe = nih_affil_dedupe\
-        .drop_duplicates(keep='first')\
         .rename(columns={'org_name': 'insti_name',
                          'org_city': 'insti_city',
                          'org_state': 'insti_code'})
 
-    nsf_affil_dedupe = nsf_grant_info[['insti_name', 'insti_city', 'insti_code']].drop_duplicates(keep='first')
+    nsf_affil_dedupe = nsf_grant_info[['insti_name', 'insti_city', 'insti_code']]
 
     affil_dedupe = pd.concat((nih_affil_dedupe, nsf_affil_dedupe)).fillna('')
     affil_dedupe = affil_dedupe.fillna('').\
-        applymap(lambda x: preprocess(x.lower().strip())).\
-        drop_duplicates(keep='first')
+        applymap(lambda x: preprocess(x.lower().strip())) # preprocess all
 
-    return affil_dedupe
+    # group index in order to refer back later
+    group_affil = affil_dedupe.fillna('').groupby(('insti_name', 'insti_city', 'insti_code'))
+    affil_dedupe = pd.DataFrame(group_affil\
+        .apply(lambda x: np.array(x.index)))\
+        .reset_index()
+
+    return affil_dedupe[['insti_name', 'insti_city', 'insti_code']], list(affil_dedupe[0])
 
 
 if __name__ == '__main__':
@@ -40,7 +45,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    all_affil_df = merge_nsf_nih_df()
+    all_affil_df, all_affil_index = merge_nsf_nih_df()
     all_affil_dict = dataframe_to_dict(all_affil_df)
 
     fields = [{'field': 'insti_name', 'type': 'String', 'has missing': True},
@@ -74,4 +79,3 @@ if __name__ == '__main__':
     all_affil_df_deduped = add_dedupe_col(all_affil_df, all_affil_dict, deduper, threshold)
     print('saving results')
     all_affil_df_deduped.to_csv(args.results, index=False)
-
