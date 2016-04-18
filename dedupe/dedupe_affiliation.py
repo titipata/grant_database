@@ -1,15 +1,6 @@
 import pandas as pd
+import argparse
 from utils import *
-w_tokenizer = WhitespaceTokenizer()
-
-
-class Parameters():
-    threshold = 0.1 # if None, we will find threshold
-    num_cores = 8
-    n_sample = 15000
-    settings_file = 'affiliation_settings'
-    training_file = 'affiliation_training.json'
-
 
 def merge_nsf_nih_df():
     """
@@ -30,35 +21,57 @@ def merge_nsf_nih_df():
 
     affil_dedupe = pd.concat((nih_affil_dedupe, nsf_affil_dedupe)).fillna('')
     affil_dedupe = affil_dedupe.fillna('').\
-        applymap(lambda x: format_text(x.lower().strip())).\
+        applymap(lambda x: preprocess(x.lower().strip())).\
         drop_duplicates(keep='first')
 
     return affil_dedupe
 
 
 if __name__ == '__main__':
-    params = Parameters()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--threshold', default=0.0, type=float, help='Threshold for merging two elements')
+    parser.add_argument('-c', '--cores', help='Number of cores to run the dedupe', default=1, type=int)
+    parser.add_argument('-n', help='Number of samples', default=15000, type=int)
+    parser.add_argument('-s', '--settings', help='Settings file', default='affiliation_settings')
+    parser.add_argument('-t', '--training', help='Training file', default='affiliation_training.json')
+    parser.add_argument('-l', '--label', help='Console label', action='store_true', default=True)
+    parser.add_argument('--results', default='institutions_disambiguated.csv')
+    parser.add_argument('-v', '--verbose', action='store_true')
+
+    args = parser.parse_args()
+
     all_affil_df = merge_nsf_nih_df()
-    all_affil_dict = dh.dataframe_to_dict(all_affil_df)
+    all_affil_dict = dataframe_to_dict(all_affil_df)
 
     fields = [{'field': 'insti_name', 'type': 'String', 'has missing': True},
               {'field': 'insti_city', 'type': 'String', 'has missing': True},
               {'field': 'insti_code', 'type': 'String', 'has missing': True}]
-    deduper = dedupe.Dedupe(fields, num_cores=params.num_cores)
-    deduper.sample(all_affil_dict, params.n_sample)
+    deduper = dedupe.Dedupe(fields, num_cores=args.cores)
+    deduper.sample(all_affil_dict, args.n)
 
-    print('load labeled data...(you can skip active labeling)')
-    if os.path.exists(params.training_file):
-        deduper = read_training_file(deduper, params.training_file)
+    if args.verbose:
+        print('loading labeled data')
+
+    if os.path.exists(args.training):
+        deduper = read_training_file(deduper, args.training)
 
     print('starting active labeling...')
-    dedupe.consoleLabel(deduper)
+
+    if args.label:
+        dedupe.consoleLabel(deduper)
+
     deduper.train(ppc=None, recall=0.95)
 
-    write_training_file(deduper, params.training_file)
+    write_training_file(deduper, args.training)
+
+    if args.threshold == 0:
+        print('finding threshold')
+        threshold = deduper.threshold(all_affil_dict, recall_weight=1.0)
+    else:
+        threshold = args.threshold
 
     print('clustering...')
-    threshold = deduper.threshold(all_affil_dict, recall_weight=1.0)
     all_affil_df_deduped = add_dedupe_col(all_affil_df, all_affil_dict, deduper, threshold)
-    all_affil_df_deduped.to_csv('institutions_disambigutated.csv', index=False)
+    print('saving results')
+    all_affil_df_deduped.to_csv(args.results, index=False)
 

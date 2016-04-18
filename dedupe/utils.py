@@ -1,34 +1,27 @@
 import os
 import re
+import string
+import numpy as np
 import dedupe
 from unidecode import unidecode
 from nltk.tokenize import WhitespaceTokenizer
 w_tokenizer = WhitespaceTokenizer()
+regex_punctuation = re.compile('[%s]' % re.escape(string.punctuation))
 
 
 def preprocess(text):
     """Preprocess text"""
-    text = text.lower()
-    text = re.sub('\.', ' ', text)
-    text = re.sub('/', ' ', text)
-    text = re.sub(',', ' ', text)
-    text = re.sub('-', ' ', text)
-    text = ' '.join(w_tokenizer.tokenize(text))
-    text = text.strip()
-    if text == '':
-        text_out = None
-    else:
-        text_out = unidecode(text)
+    try:
+        text = text.lower()
+        text = regex_punctuation.sub(' ', text)
+        text = ' '.join(w_tokenizer.tokenize(text))
+        if text == '':
+            text_out = None
+        else:
+            text_out = unidecode(text)
+    except:
+        text_out = ''
     return text_out
-
-
-def format_text(text):
-    """Fill empty string with none"""
-    if text.strip() == '':
-        text_output = None
-    else:
-        text_output = unidecode(text)
-    return text_output
 
 
 def read_setting_file(filename='settings'):
