@@ -1,6 +1,27 @@
 import pandas as pd
 import argparse
+from itertools import chain
 from utils import *
+
+
+def create_unique_id(nih_grant_info, nsf_grant_info, affil_index):
+    """
+    Give dataframe from NIH/NSF grant and list of duplicated index
+    create table with unique id of same affiliation string
+    """
+    nih_grant_info['grant'] = 'nih'
+    nsf_grant_info['grant'] = 'nsf'
+    nih_grant_concat = nih_grant_info[['application_id', 'grant']]
+    nsf_grant_concat = nsf_grant_info[['award_id', 'grant']]\
+        .rename(columns={'award_id': 'application_id'})
+    grant_df = pd.concat((nih_grant_concat, nsf_grant_concat), axis=0)\
+        .reset_index(drop=True)
+    grant_df['index'] = grant_df.index
+    affil_merge = [list(zip(a, [i]*len(a))) for (i, a) in enumerate(affil_index)]
+    affil_merge = list(chain(*affil_merge)) # flatten list
+    affil_merge = pd.DataFrame(affil_merge, columns=['index', 'affiliation_id'])
+    affil_merge_df = grant_df.merge(affil_merge, on='index').drop(['index'], axis=1)
+    return affil_merge_df
 
 
 def merge_nsf_nih_df():
@@ -21,15 +42,20 @@ def merge_nsf_nih_df():
 
     affil_dedupe = pd.concat((nih_affil_dedupe, nsf_affil_dedupe)).fillna('')
     affil_dedupe = affil_dedupe.fillna('').\
-        applymap(lambda x: preprocess(x.lower().strip())) # preprocess all
+        applymap(lambda x: preprocess(x.lower().strip())).\
+        reset_index(drop=True) # preprocess all
 
-    # group index in order to refer back later
+    # group index of affiliation with same (name, city, code)
     group_affil = affil_dedupe.fillna('').groupby(('insti_name', 'insti_city', 'insti_code'))
-    affil_dedupe = pd.DataFrame(group_affil\
+    affil_index = pd.DataFrame(group_affil\
         .apply(lambda x: np.array(x.index)))\
-        .reset_index()
+        .reset_index(drop=True) # dataframe of grouped same row
+    affil_index = list(affil_index[0])
 
-    return affil_dedupe[['insti_name', 'insti_city', 'insti_code']], list(affil_dedupe[0])
+    # return table of (grant, application id, affiliation id)
+    affil_merge_df = create_unique_id(nih_grant_info, nsf_grant_info, affil_index)
+
+    return affil_dedupe, affil_merge_df
 
 
 if __name__ == '__main__':
@@ -45,7 +71,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    all_affil_df, all_affil_index = merge_nsf_nih_df()
+    all_affil_df, affil_merge_df = merge_nsf_nih_df()
     all_affil_dict = dataframe_to_dict(all_affil_df)
 
     fields = [{'field': 'insti_name', 'type': 'String', 'has missing': True},
@@ -79,3 +105,6 @@ if __name__ == '__main__':
     all_affil_df_deduped = add_dedupe_col(all_affil_df, all_affil_dict, deduper, threshold)
     print('saving results')
     all_affil_df_deduped.to_csv(args.results, index=False)
+
+    print('saving table between application id and unique affiliation')
+    affil_merge_df.to_csv('application_vs_affiliation.csv', index=False)
