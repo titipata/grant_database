@@ -9,7 +9,7 @@ from utils import *
 class Parameters():
     num_cores = 4
     n_sample = 15000
-    input_file = '../nsf/nsf_grant_investigators.csv'
+    input_file = '../data/nsf/nsf_grant_investigators.csv'
     output_file = ''
     settings_file = 'nsf_settings'
     training_file = 'nsf_training.json'

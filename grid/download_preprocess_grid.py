@@ -14,7 +14,10 @@ def download_file():
         print("File exists already")
     else:
         print("Downloading file")
-        grid_affil = urllib.FancyURLopener()
+        try:
+            grid_affil = urllib.FancyURLopener()
+        except:
+            grid_affil = urllib.request.FancyURLopener()
         grid_affil.retrieve(GRID_URL, 'grid_affil.zip')
 
 
@@ -26,6 +29,7 @@ def unzip_file():
         print("Extracting files")
         with zipfile.ZipFile('grid_affil.zip', 'r') as zip_file:
             zip_file.extractall('raw_grid')
+
 
 def preprocess_files():
     def merge_acronyms_aliases(df):
@@ -50,8 +54,11 @@ def preprocess_files():
     merged_acronyms_aliases_df = grouped_df.apply(merge_acronyms_aliases)
     all_affil_info_df = merged_acronyms_aliases_df.merge(addresses_df[['grid_id', 'lat', 'lng']], how='left')
     print("Saving")
+    if not os.path.exists('../data/grid/'):
+        os.mkdir('../data/grid') # create folder if not exist
     all_affil_info_df.to_csv('../data/grid/grid_merged_affil.csv', index=False)
     print("Done.")
+
 
 if __name__ == '__main__':
     download_file()

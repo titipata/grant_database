@@ -41,12 +41,12 @@ def prepare_linkage_dict():
     """
     cname = ['full_name', 'insti_name', 'insti_city']
     print('read file from NIH and NSF folder...')
-    nih_investigators = pd.read_csv('../nih/nih_grant_investigators.csv').fillna('')
+    nih_investigators = pd.read_csv('../data/nih/nih_grant_investigators.csv').fillna('')
     nih_investigators['full_name'] = nih_investigators.first_name + ' ' + \
                                      nih_investigators.last_name
-    nih_info = pd.read_csv('../nih/nih_grant_info.csv').fillna('')
+    nih_info = pd.read_csv('../data/nih/nih_grant_info.csv').fillna('')
     nsf_investigators = pd.read_csv('../nsf/nsf_grant_investigators.csv').fillna('')
-    nsf_info = pd.read_csv('../nsf/nsf_grant_info.csv').fillna('')
+    nsf_info = pd.read_csv('../data/nsf/nsf_grant_info.csv').fillna('')
     nsf_investigators['full_name'] = nsf_investigators.first_name + ' ' + \
                                      nsf_investigators.last_name
     nih_info.rename(columns={'org_city': 'insti_city',

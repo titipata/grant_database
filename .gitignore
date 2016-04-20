@@ -174,7 +174,9 @@ Temporary Items
 # Custom folders
 links/
 data/
+grid/raw_grid/
 
 # temporary not allow pushing IPython notebook
 *.ipynb
 *.csv
+*.zip
