@@ -2,18 +2,11 @@ import os
 import re
 import dedupe
 import pandas as pd
+import argparse
 from utils import *
 from nltk.tokenize import WhitespaceTokenizer
 import pickle
 wtk = WhitespaceTokenizer()
-
-
-class Parameters():
-    threshold = None # if None, we will find threshold
-    num_cores = 8
-    n_sample = 15000
-    settings_file = 'link_affiliation_settings'
-    training_file = 'link_affiliation_training.json'
 
 
 def write_training_file(deduper, filename='link_affiliation_training.json'):
@@ -48,10 +41,22 @@ def prepare_df():
 
 
 if __name__ == '__main__':
-    params = Parameters()
-    n_sample = params.n_sample
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--threshold', default=0.0, type=float, help='Threshold for merging two elements')
+    parser.add_argument('-c', '--cores', help='Number of cores to run the dedupe', default=1, type=int)
+    parser.add_argument('-n', help='Number of samples', default=15000, type=int)
+    parser.add_argument('-t', '--training', help='Training file', default='link_affiliation_training.json')
+    parser.add_argument('-l', '--skiplabel', help='Skip console labeling', action='store_true')
+    parser.add_argument('-p', '--nopredicates',
+                        help="Makes deduping significantly faster",
+                        action='store_true')
+    parser.add_argument('--results', default='final_gridlinked_affils.csv')
+    parser.add_argument('-v', '--verbose', action='store_true')
 
-    print('prepare dataset...')
+    args = parser.parse_args()
+
+    if args.verbose:
+        print('prepare dataset...')
     if not os.path.isfile('grid_dict.pickle') or not os.path.isfile('grant_affils_dict.pickle'):
         grant_affils_df, grid_df = prepare_df()
         grant_affils_dict = dataframe_to_dict(grant_affils_df)
@@ -65,33 +70,40 @@ if __name__ == '__main__':
     fields = [{'field' : 'insti_city', 'type': 'String', 'has missing' : True},
               {'field' : 'insti_name', 'type': 'String', 'has missing' : True}]
 
-    linker = dedupe.RecordLink(fields)
+    linker = dedupe.RecordLink(fields, num_cores=args.cores)
 
-    linker.sample(grant_affils_dict, grid_dict, params.n_sample)
-    if os.path.exists(params.training_file):
-        linker = read_training_file(linker, params.training_file)
+    linker.sample(grant_affils_dict, grid_dict, args.n)
+    if os.path.exists(args.training):
+        linker = read_training_file(linker, args.training)
 
-    # dedupe.consoleLabel(linker)
-    print('training linker...')
-    linker.train(ppc=None)
-    write_training_file(linker, params.training_file) # update training file
+    if not args.skiplabel:
+        dedupe.consoleLabel(linker)
 
-    print('finding threshold...')
-    if params.threshold is None:
-        params.threshold = linker.threshold(grid_dict, grant_affils_dict,
+    if args.verbose:
+        print('training linker...')
+    linker.train(ppc=None, index_predicates=not args.nopredicates)
+    write_training_file(linker, args.training) # update training file
+
+    if args.verbose:
+        print('finding threshold...')
+    if args.threshold == 0:
+        args.threshold = linker.threshold(grid_dict, grant_affils_dict,
                                             recall_weight=0.5)
 
+
     linked_records = linker.match(grid_dict, grant_affils_dict,
-                                  threshold=params.threshold)
+                                  threshold=args.threshold)
     # add grid_id to grant_affils_dict
     id1 = np.array([i1[0] for i1, p in linked_records])
     id2 = np.array([i1[1] for i1, p in linked_records])
 
     grid_df2 = pd.DataFrame(grid_dict).T
-    grid_affils_df2 = pd.DataFrame(grant_affils_dict).T
+    grant_affils_df2 = pd.DataFrame(grant_affils_dict).T
     # linking grid to grants affiliations
-    grid_affils_df2['grid_id'] = None
-    grid_affils_df2.grid_id.iloc[id2] = grid_df2.grid_id.iloc[id1]
-    print("Saving results")
-    grid_affils_df2.to_csv('final_grid_affils.csv', index=False)
-    print('# of record linkage = %s' % len(linked_records))
+    grant_affils_df2['grid_id'] = None
+    grant_affils_df2.grid_id.iloc[id2] = np.array(grid_df2.grid_id.iloc[id1])
+    if args.verbose:
+        print("Saving results")
+    grant_affils_df2.to_csv(args.results, index=False)
+    if args.verbose:
+        print('# of record linkage = %s' % len(linked_records))
