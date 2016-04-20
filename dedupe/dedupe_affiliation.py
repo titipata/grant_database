@@ -47,15 +47,18 @@ def merge_nsf_nih_df():
 
     # group index of affiliation with same (name, city, code)
     group_affil = affil_dedupe.fillna('').groupby(('insti_name', 'insti_city', 'insti_code'))
-    affil_index = pd.DataFrame(group_affil\
+    group_affil_index = pd.DataFrame(group_affil\
         .apply(lambda x: np.array(x.index)))\
-        .reset_index(drop=True) # dataframe of grouped same row
-    affil_index = list(affil_index[0])
+        .reset_index() # dataframe of grouped same row
 
     # return table of (grant, application id, affiliation id)
-    affil_merge_df = create_unique_id(nih_grant_info, nsf_grant_info, affil_index)
+    group_index = list(group_affil_index[0])
+    affil_merge_df = create_unique_id(nih_grant_info, nsf_grant_info, group_index)
 
-    return affil_dedupe, affil_merge_df
+    all_affil_df = group_affil_index[['insti_name', 'insti_city', 'insti_code']]
+    all_affil_df = all_affil_df.applymap(lambda x: None if x is '' else x)
+
+    return all_affil_df, affil_merge_df
 
 
 if __name__ == '__main__':
