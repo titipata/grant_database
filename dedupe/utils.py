@@ -80,6 +80,7 @@ def add_dedupe_col(df, df_dict, deduper, threshold):
     df_new = df.copy()
     df_new['dedupe_id'] = None
     clustered = deduper.match(df_dict, threshold)
+    clustered = list(clustered)
     cluster_assignment_idx = np.array([[row_id, c_id]
                                        for c_id in range(len(clustered))
                                        for row_id in clustered[c_id][0]])
