@@ -20,4 +20,5 @@ do
   echo unzipped ${z##*/}
 done
 
-# and parse later
+# to parse nsf data, run the follow
+# python parse_nsf.py

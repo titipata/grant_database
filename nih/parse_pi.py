@@ -43,7 +43,7 @@ def process_pi_name(pi_name):
 if __name__ == '__main__':
     print("Create investigators dataset ...")
     pi_df_all = []
-    path_list = glob.glob('data/proj/*/*.csv', recursive=True)
+    path_list = glob.glob('data/project/*/*.csv')
     for p in path_list:
         print("Extract authors from %s ..." % p.split('/')[-1])
         df = pd.read_csv(p, encoding = "ISO-8859-1").fillna('')

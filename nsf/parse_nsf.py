@@ -64,7 +64,7 @@ def parse_nsf_xml(path):
         insti_streetaddr = i_.find('StreetAddress').text
         insti_streetname = i_.find('StateName').text
         insti_code = i_.find('StateCode').text
-
+        insti_country = i_.find('CountryName').text
 
     grant_info = {'file_name': number, 'title': title, 'abstract': abstract,
                   'effective_date': effective_date, 'expire_date': expire_date, 'amount': amount,
@@ -72,7 +72,8 @@ def parse_nsf_xml(path):
                   'org_code': org_code, 'division': division,
                   'insti_name': insti_name, 'insti_city': insti_city, 'insti_zip': insti_zip,
                   'insti_phone': insti_phone, 'insti_streetaddr': insti_streetaddr,
-                  'insti_streetname': insti_streetname, 'insti_code': insti_code}
+                  'insti_streetname': insti_streetname, 'insti_code': insti_code,
+                  'insti_country': insti_country}
 
     grant_investigators = []
     t = tree.xpath('//Award/Investigator')

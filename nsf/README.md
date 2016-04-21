@@ -5,20 +5,13 @@ All NSF award can be downloaded [here](https://www.nsf.gov/awardsearch/download.
 Run
 
 ```
-./dl_nsf.sh
+source dl_nsf.sh
 ```
 
-This will download all grant to `data` folder. If you are not able to run then do `chmod` first
+This will download all grant to `data` folder.
 
-```
-chmod +x dl_nsf.sh
-```
+This script will also run `python dl_nsf.py` to create `nsf_awards.txt` which contains
+the links to zip files. Then it downloads and unzips all those zip files into the `data` directory.
 
-and run again
-
-This script will run `python dl_nsf.py` to create `nsf_awards.txt` which contains
-link to zip file. Then it downloads and unzips all those zip files into `data` directory.
-
-To parse all downloaded xml file in `data` folder, run `python parse_nsf.py`
-(right now, we run sample of 50k xml, you can modify in the file to parse all).
+To parse all downloaded xml files in `data` folder, run `python parse_nsf.py`.
 This will generate `nsf_grant_info.csv` and `nsf_grant_investigators.csv` file
