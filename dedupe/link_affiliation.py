@@ -9,16 +9,18 @@ import pickle
 
 
 def prepare_df():
-    deduped_affils_df = pd.read_csv('institutions_disambigutated.csv')
+    deduped_affils_df = pd.read_csv('institutions_disambiguated.csv')
     # merge grants affils
     def select_longest_names(df):
         longest_insti_name = np.argmax(np.array(df.insti_name.map(len)))
         longest_insti_city = np.argmax(np.array(df.insti_city.map(len)))
         longest_insti_code = np.argmax(np.array(df.insti_code.map(len)))
+        longest_insti_country = np.argmax(np.array(df.insti_country.map(len)))
         new_df = df.iloc[[0]]
         new_df['insti_name'] = df.insti_name.iloc[longest_insti_name]
         new_df['insti_city'] = df.insti_city.iloc[longest_insti_city]
         new_df['insti_code'] = df.insti_code.iloc[longest_insti_code]
+        new_df['insti_country'] = df.insti_country.iloc[longest_insti_country]
         return new_df
 
     deduped_affils_merged_df = deduped_affils_df.fillna('') \
@@ -39,12 +41,18 @@ def prepare_df():
         .apply(preprocess) \
         .apply(lambda x: None if x == '' else x)
 
+    deduped_affils_merged_df['insti_country'] = deduped_affils_merged_df.insti_country \
+        .apply(preprocess) \
+        .apply(lambda x: None if x == '' else x)
+
     grid_df = pd.read_csv('../data/grid/grid_merged_affil.csv')
     grid_df['insti_name'] = grid_df.NameMerged.apply(preprocess).apply(lambda x: None if x == '' else x)
     grid_df['insti_city'] = grid_df.City.apply(preprocess).apply(lambda x: None if x == '' else x)
-    grid_df['insti_code'] = grid_df.State.map(lambda x: states[x] if x in states else preprocess(x))\
+    grid_df['insti_code'] = grid_df.State.map(lambda x: states[x] if x in states else x)\
         .fillna('')\
+        .apply(preprocess)\
         .apply(lambda x: None if x == '' else x)
+    grid_df['insti_country'] = grid_df.Country.apply(preprocess).apply(lambda x: None if x == '' else x)
     return deduped_affils_merged_df, grid_df
 
 
@@ -77,7 +85,9 @@ if __name__ == '__main__':
 
     fields = [{'field' : 'insti_city', 'type': 'String', 'has missing' : True},
               {'field' : 'insti_name', 'type': 'String', 'has missing' : True},
-              {'field' : 'insti_code', 'type': 'String', 'has missing': True}]
+              {'field' : 'insti_code', 'type': 'String', 'has missing' : True},
+              {'field' : 'insti_country', 'type': 'String', 'has missing': True},
+              ]
 
     linker = dedupe.RecordLink(fields, num_cores=args.cores)
 
