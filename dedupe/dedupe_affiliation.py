@@ -80,7 +80,8 @@ if __name__ == '__main__':
 
     fields = [{'field': 'insti_name', 'type': 'String', 'has missing': True},
               {'field': 'insti_city', 'type': 'String', 'has missing': True},
-              {'field': 'insti_code', 'type': 'String', 'has missing': True}]
+              {'field': 'insti_code', 'type': 'String', 'has missing': True},
+              {'field': 'insti_country', 'type': 'String', 'has missing': True}]
     deduper = dedupe.Dedupe(fields, num_cores=args.cores)
     deduper.sample(all_affil_dict, args.n)
 
