@@ -6,14 +6,6 @@ import argparse
 from utils import *
 from nltk.tokenize import WhitespaceTokenizer
 import pickle
-wtk = WhitespaceTokenizer()
-
-
-def write_training_file(deduper, filename='link_affiliation_training.json'):
-    """Give a deduper, write a training file"""
-    with open(filename, 'w') as tf:
-        deduper.writeTraining(tf)
-    print("Training file saved")
 
 
 def prepare_df():

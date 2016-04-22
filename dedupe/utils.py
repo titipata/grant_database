@@ -27,7 +27,7 @@ def preprocess(text):
 def read_setting_file(filename='settings'):
     """Read dedupe settings file"""
     settings_file = filename
-    print('reading from', settings_file)
+    print('reading from ', settings_file)
     with open(settings_file, 'rb') as sf:
         deduper = dedupe.StaticDedupe(sf)
     return deduper

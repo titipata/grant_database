@@ -222,7 +222,8 @@ links/
 data/
 grid/raw_grid/
 
-# temporary not allow pushing IPython notebook
+# temporary not allow pushing IPython notebook and dedupe training files 
 *.ipynb
 *.csv
 *.zip
+*.json
