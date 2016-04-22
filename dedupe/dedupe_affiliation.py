@@ -32,13 +32,14 @@ def merge_nsf_nih_df():
     nih_grant_info = pd.read_csv('../data/nih/nih_grant_info.csv')
     nsf_grant_info = pd.read_csv('../data/nsf/nsf_grant_info.csv')
 
-    nih_affil_dedupe = nih_grant_info[['org_name', 'org_city', 'org_state']]
+    nih_affil_dedupe = nih_grant_info[['org_name', 'org_city', 'org_state', 'org_country']]
     nih_affil_dedupe = nih_affil_dedupe\
         .rename(columns={'org_name': 'insti_name',
                          'org_city': 'insti_city',
-                         'org_state': 'insti_code'})
+                         'org_state': 'insti_code',
+                         'org_country': 'insti_country'})
 
-    nsf_affil_dedupe = nsf_grant_info[['insti_name', 'insti_city', 'insti_code']]
+    nsf_affil_dedupe = nsf_grant_info[['insti_name', 'insti_city', 'insti_code', 'insti_country']]
 
     affil_dedupe = pd.concat((nih_affil_dedupe, nsf_affil_dedupe)).fillna('')
     affil_dedupe = affil_dedupe.fillna('').\
@@ -46,7 +47,7 @@ def merge_nsf_nih_df():
         reset_index(drop=True) # preprocess all
 
     # group index of affiliation with same (name, city, code)
-    group_affil = affil_dedupe.fillna('').groupby(('insti_name', 'insti_city', 'insti_code'))
+    group_affil = affil_dedupe.fillna('').groupby(('insti_name', 'insti_city', 'insti_code', 'insti_country'))
     group_affil_index = pd.DataFrame(group_affil\
         .apply(lambda x: np.array(x.index)))\
         .reset_index() # dataframe of grouped same row
@@ -55,7 +56,7 @@ def merge_nsf_nih_df():
     group_index = list(group_affil_index[0])
     affil_merge_df = create_unique_id(nih_grant_info, nsf_grant_info, group_index)
 
-    all_affil_df = group_affil_index[['insti_name', 'insti_city', 'insti_code']]
+    all_affil_df = group_affil_index[['insti_name', 'insti_city', 'insti_code', 'insti_country']]
     all_affil_df = all_affil_df.applymap(lambda x: None if x is '' else x)
 
     return all_affil_df, affil_merge_df
@@ -94,7 +95,7 @@ if __name__ == '__main__':
     if not args.skiplabel:
         dedupe.consoleLabel(deduper)
 
-    deduper.train(ppc=None, recall=0.95)
+    deduper.train(ppc=None, recall=0.95, index_predicates=False)
 
     write_training_file(deduper, args.training)
 
