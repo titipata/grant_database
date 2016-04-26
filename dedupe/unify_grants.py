@@ -1,4 +1,16 @@
 import pandas as pd
+import numpy as np
+
+
+def select_longest_names(df):
+    longest_institution_name = np.argmax(np.array(df.institution_name.map(len)))
+    longest_state = np.argmax(np.array(df.state.map(len)))
+    longest_country = np.argmax(np.array(df.country.map(len)))
+    new_df = df.iloc[[0]]
+    new_df['institution_name'] = df.institution_name.iloc[longest_institution_name]
+    new_df['state'] = df.state.iloc[longest_state]
+    new_df['country'] = df.country.iloc[longest_country]
+    return new_df
 
 
 if __name__ == '__main__':
@@ -15,7 +27,7 @@ if __name__ == '__main__':
         'amount': 'amount',
         'start_date': 'effective_date',
         'end_date': 'expire_date',
-        'instition_name': 'insti_name',
+        'institution_name': 'insti_name',
         'city': 'insti_city',
         'state': 'insti_code',
         'country': 'insti_country',
@@ -30,7 +42,7 @@ if __name__ == '__main__':
         'start_date': 'budget_start',
         'end_date': 'budget_end',
         'type': 'activity',
-        'instition_name': 'org_name',
+        'institution_name': 'org_name',
         'city': 'org_city',
         'state': 'org_state',
         'country': 'org_country',
@@ -46,6 +58,20 @@ if __name__ == '__main__':
 
     # linking grants with deduplicated affiliation
     deduped_grants_df = all_grants_df \
-        .merge(affil_df.merge(institution_disambiguated)[['application_id', 'grant', 'dedupe_id']])
+        .merge(affil_df\
+        .merge(institution_disambiguated)[['application_id', 'grant', 'dedupe_id']])
     # saving
     deduped_grants_df.to_csv('../data/deduped_grants_df.csv', index=False)
+
+    # generate unique institution names
+    affil_unique_df = deduped_grants_df[['dedupe_id',
+        'institution_name',
+        'state',
+        'country']]\
+        .fillna('')\
+        .drop_duplicates()\
+        .groupby('dedupe_id')\
+        .apply(select_longest_names)\
+        .reset_index(drop=True)
+    # save
+    affil_unique_df.to_csv('../data/deduped_affiliation.csv', index=False)
