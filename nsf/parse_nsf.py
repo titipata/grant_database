@@ -41,7 +41,7 @@ def parse_nsf_xml(path):
         except:
             raise Exception("It was not able to read a path, a file-like object, or a string as an XML")
 
-    number = path_list[1].split('/')[-1] # file name
+    number = path.split('/')[-1] # grant file name
     title = ''.join(tree.xpath('//Award/AwardTitle/text()'))
     effective_date = ''.join(tree.xpath('//Award/AwardEffectiveDate/text()'))
     expire_date = ''.join(tree.xpath('//Award/AwardExpirationDate/text()'))
