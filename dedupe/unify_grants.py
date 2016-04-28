@@ -48,10 +48,10 @@ if __name__ == '__main__':
         'country': 'org_country',
     }
     nsf_grant_info['activity'] = None
-    nih_unified_df = nih_grant_all_info[nih_column_mapping.values()] \
+    nih_unified_df = nih_grant_all_info[list(nih_column_mapping.values())] \
         .rename(columns={v: k for k, v in nih_column_mapping.items()})
     nih_unified_df['grant'] = 'nih'
-    nsf_unified_df = nsf_grant_info[nsf_column_mapping.values()] \
+    nsf_unified_df = nsf_grant_info[list(nsf_column_mapping.values())] \
         .rename(columns={v: k for k, v in nsf_column_mapping.items()})
     nsf_unified_df['grant'] = 'nsf'
     all_grants_df = pd.concat((nih_unified_df, nsf_unified_df))

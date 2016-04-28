@@ -19,6 +19,11 @@ own unique applicants id, that is, we don't have to dedupe NIH investigators.
 affiliation across NIH and NSF grants. Many parameters of the deduplication process
 can be tweaked by looking at the parameters with `python dedupe_affiliation.py -h`.
 For example, to skip the console labeling step, run `python dedupe_affiliation.py --skiplabel`.
+This code will produce 2 main files including `institutions_disambiguated.csv`
+and `application_vs_affiliation.csv` (and `json` file produced from `dedupe`).
+
+- **Unify NIH and NSF grants:** run `python unify_grants.py`. This will grab
+files produced from `dedupe_affiliation.py` in this folder and merge all the dataset together.
 
 - **Affiliations linkage:** record linkage script between deduped NIH and NSF
 affiliations and GRID database is in `link_affiliation.py`.
