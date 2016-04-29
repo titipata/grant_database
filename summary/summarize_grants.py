@@ -37,7 +37,7 @@ def summarize_grant(df, dedupe_id=0, grant_type=None):
     if grant_type:
         query_text += ' and grant == "%s"' % grant_type
     df_sel = df.query(query_text)
-    df_group = df_sel.groupby(['grant', 'year'])
+    df_group = df_sel.groupby(['year'])
     df_summary = df_group.agg({'amount': lambda x: np.sum(x), 'n_grants': lambda x: np.sum(x)}).reset_index()
     return df_summary
 
@@ -90,11 +90,14 @@ if __name__ == '__main__':
         title=affiliation_dict[args.index].title(),
         y_axis_type="log",
         x_axis_label="year",
-        x_range=[1950, 2020],
-        y_range=[np.min(df[y])-5, np.max(df[y])+100],
+        x_range=[1970, 2020],
+        y_range=[np.min(df[y])-5, np.max(df[y])*2],
         y_axis_label="Number of grants",
         tools = "save"
     )
     output_file(args.output)
-    fig = scatter_with_hover(df, x, y, fig=f, marker='o', cols=[x, y, val])
-    show(fig)
+    if len(df) == 0:
+        print("no grants found for this dedupe index...")
+    else:
+        fig = scatter_with_hover(df, x, y, fig=f, marker='o', cols=[x, y, val])
+        show(fig)
