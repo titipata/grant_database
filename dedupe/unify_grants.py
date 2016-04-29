@@ -57,11 +57,14 @@ if __name__ == '__main__':
     all_grants_df = pd.concat((nih_unified_df, nsf_unified_df))
 
     # linking grants with deduplicated affiliation
+    # we temporary fix application_id problem by converting to string
+    all_grants_df.application_id = all_grants_df.application_id.map(str)
+    affil_df.application_id = affil_df.application_id.map(str)
     deduped_grants_df = all_grants_df \
         .merge(affil_df\
         .merge(institution_disambiguated)[['application_id', 'grant', 'dedupe_id']])
     # saving
-    deduped_grants_df.to_csv('../data/deduped_grants_df.csv', index=False)
+    deduped_grants_df.to_csv('../data/deduped_grants.csv', index=False)
 
     # generate unique institution names
     affil_unique_df = deduped_grants_df[['dedupe_id',
@@ -74,4 +77,4 @@ if __name__ == '__main__':
         .apply(select_longest_names)\
         .reset_index(drop=True)
     # save
-    affil_unique_df.to_csv('../data/deduped_affiliation.csv', index=False)
+    affil_unique_df.to_csv('../data/deduped_affiliations.csv', index=False)
