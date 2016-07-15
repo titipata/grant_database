@@ -5,8 +5,9 @@ import numpy as np
 import dedupe
 from unidecode import unidecode
 from nltk.tokenize import WhitespaceTokenizer
+
 w_tokenizer = WhitespaceTokenizer()
-regex_punctuation = re.compile('[%s]' % re.escape(string.punctuation))
+punct_re = re.compile('[{}]'.format(re.escape(string.punctuation)))
 
 states = {
  'Alabama': 'AL',
@@ -69,18 +70,23 @@ states = {
 }
 
 def preprocess(text):
-    """Preprocess text"""
-    try:
-        text = text.lower()
-        text = regex_punctuation.sub(' ', text)
-        text = ' '.join(w_tokenizer.tokenize(text))
-        if text == '':
-            text_out = None
-        else:
-            text_out = unidecode(text)
-    except:
-        text_out = ''
-    return text_out
+    """
+    Preprocess text before dedupe
+
+    Parameters
+    ----------
+    text : str, input abstract of papers/posters string
+    stemming : boolean, apply Porter stemmer if True,
+        default True
+    """
+    if isinstance(text, (type(None), float)):
+        text_preprocess = ''
+    else:
+        text = unidecode(text).lower()
+        text = punct_re.sub(' ', text) # remove punctuation
+        text_preprocess = w_tokenizer.tokenize(text)
+        text_preprocess = ' '.join(text_preprocess)
+    return text_preprocess
 
 
 def read_setting_file(filename='settings'):
