@@ -6,7 +6,7 @@ import pandas as pd
 
 
 # set GRID file. Update when a new version comes along
-GRID_URL = 'http://ndownloader.figshare.com/files/4901572'
+GRID_URL = 'https://ndownloader.figshare.com/files/5648784'
 
 def download_file():
     """Download latest version of GRID datafile"""
@@ -43,11 +43,12 @@ def preprocess_files():
         return new_df
 
     print("Reading raw GRID data")
-    grid_df = pd.read_csv('raw_grid/grid.csv')
+    grid_path = os.path.join('raw_grid', 'grid-20160728')
+    grid_df = pd.read_csv(os.path.join(grid_path, 'grid.csv'))
     grid_df.rename(columns={'ID': 'grid_id'}, inplace=True)
-    acronyms_df = pd.read_csv('raw_grid/full_tables/acronyms.csv')
-    aliases_df = pd.read_csv('raw_grid/full_tables/aliases.csv')
-    addresses_df = pd.read_csv('raw_grid/full_tables/addresses.csv')
+    acronyms_df = pd.read_csv(os.path.join(grid_path, 'full_tables', 'acronyms.csv'))
+    aliases_df = pd.read_csv(os.path.join(grid_path, 'full_tables', 'aliases.csv'))
+    addresses_df = pd.read_csv(os.path.join(grid_path, 'full_tables', 'addresses.csv'))
     grid_enriched_df = grid_df.merge(acronyms_df, how='left').merge(aliases_df, how='left').fillna('')
     grouped_df = grid_enriched_df.groupby('grid_id')
     print("Merging acronyms and aliases")
