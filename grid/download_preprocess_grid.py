@@ -6,7 +6,8 @@ import pandas as pd
 
 
 # set GRID file. Update when a new version comes along
-GRID_URL = 'https://ndownloader.figshare.com/files/5648784'
+#GRID_URL = 'https://ndownloader.figshare.com/files/5648784'
+GRID_URL = 'https://ndownloader.figshare.com/files/11307407'
 
 def download_file():
     """Download latest version of GRID datafile"""
